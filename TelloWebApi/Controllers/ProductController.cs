@@ -27,8 +27,30 @@ namespace TelloWebApi.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Product> products = _context.Products.Where(p => !p.isDeleted).ToList();
-            return Ok(products);
+            List<Product> products = _context.Products.Include(p => p.Photos).Include(p => p.Category).Where(p => !p.isDeleted).ToList();
+            List<ProductReturnDto> productReturnDtos = new List<ProductReturnDto>();
+            foreach (var item in products)
+            {
+                ProductReturnDto productReturnDto = new ProductReturnDto();
+
+                productReturnDto.Id = item.Id;
+                productReturnDto.Title = item.Title;
+                productReturnDto.Description = item.Description;
+                productReturnDto.NewPrice = item.NewPrice;
+                productReturnDto.OldPrice = item.OldPrice;
+                productReturnDto.CategoryTitle = item.Category.Title;
+                productReturnDto.inStock = item.inStock;
+
+                foreach (var photo in item.Photos)
+                {
+                    productReturnDto.PhotoPath = photo.Path;
+                    productReturnDto.isMainPhoto = photo.IsMain;
+                };
+
+                productReturnDtos.Add(productReturnDto);
+            }
+
+            return Ok(productReturnDtos);
         }
 
         [HttpGet("{id}")]
@@ -47,32 +69,64 @@ namespace TelloWebApi.Controllers
 
         [HttpGet("bestSelling")]
         public IActionResult GetBestSellingProduct()
-        {
-            List<Rating> dbRatings = _context.Ratings
-                .Include(r => r.Product)
+        { 
+            IQueryable<ProductReturnDto> query = _context.Ratings
+              .Include(r => r.Product)
                 .ThenInclude(p => p.Photos)
-                .Where(r => r.Avarge > 5 && !r.Product.isDeleted)
-                .ToList();
-            ProductReturnDto productReturnDto = new ProductReturnDto();
-            List<ProductReturnDto> productReturnDtos = new List<ProductReturnDto>();
-            foreach (var item in dbRatings)
-            {
-                productReturnDto.Photos = item.Product.Photos;
-                productReturnDto.NewPrice = item.Product.NewPrice;
-                productReturnDto.OldPrice = item.Product.OldPrice;
-                productReturnDto.Title = item.Product.Title;
-                productReturnDtos.Add(productReturnDto);
-            }
+                .Include(r => r.Product)
+                .ThenInclude(p => p.Category)
 
-            return Ok(productReturnDtos);
+                .Where(r => r.Avarge > 1 && !r.Product.isDeleted)
+              .Select(x => new ProductReturnDto
+              {
+                  Id = x.ProductId,
+                  Title = x.Product.Title,
+                  Description = x.Product.Description,
+                  NewPrice = x.Product.NewPrice,
+                  OldPrice = x.Product.OldPrice,
+                  CategoryTitle = x.Product.Category.Title,
+                  inStock = x.Product.inStock,
+                  Photos = x.Product.Photos.Select(x => new Photo
+                  {
+                       Id = x.ProductId,
+                      Path = x.Path,
+                      IsMain = x.IsMain
+
+                  }).ToList()
+              });
+            var result = query.ToList();
+
+            return Ok(result);
         }
 
         [HttpGet("newArrival")]
         public IActionResult GetNewArrivalProduct()
         {
-            var from = DateTime.UtcNow.AddDays(-1);
-            List<Product> products = _context.Products.Where(p => p.CreatedDate >= from).ToList();
-            return Ok(products);
+            var from = DateTime.UtcNow.AddDays(-10);
+            IQueryable<ProductReturnDto> query = _context.Products
+                 .Include(p => p.Category)
+                .Where(p => p.CreatedDate >= from)
+              .Select(x => new ProductReturnDto
+              {
+                  Id = x.Id,
+                  Title = x.Title,
+                  Description = x.Description,
+                  NewPrice = x.NewPrice,
+                  OldPrice = x.OldPrice,
+                  CategoryTitle = x.Category.Title,
+                  inStock = x.inStock,
+                  Photos = x.Photos.Select(x => new Photo
+                  {
+                      Id = x.ProductId,
+                      Path = x.Path,
+                      IsMain = x.IsMain
+
+                  }).ToList()
+              });
+            var result = query.ToList();
+
+            return Ok(result);
+
 
         }
 
@@ -180,7 +234,7 @@ namespace TelloWebApi.Controllers
                 }
 
             };
-         
+
             _context.Add(newProduct);
             _context.SaveChanges();
             return StatusCode(201);
@@ -206,6 +260,8 @@ namespace TelloWebApi.Controllers
         {
             return StatusCode(200);
         }
+
+
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

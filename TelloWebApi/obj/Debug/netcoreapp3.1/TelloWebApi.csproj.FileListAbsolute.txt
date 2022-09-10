@@ -50,3 +50,6 @@ C:\Users\Clean__Laptop\Desktop\TelloWebApi\TelloWebApi\bin\Debug\netcoreapp3.1\F
 C:\Users\Clean__Laptop\Desktop\TelloWebApi\TelloWebApi\bin\Debug\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll
 C:\Users\Clean__Laptop\Desktop\TelloWebApi\TelloWebApi\bin\Debug\netcoreapp3.1\System.Text.Encodings.Web.dll
 C:\Users\Clean__Laptop\Desktop\TelloWebApi\TelloWebApi\bin\Debug\netcoreapp3.1\System.Text.Json.dll
+C:\Users\Clean__Laptop\Desktop\TelloWebApi\TelloWebApi\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\Clean__Laptop\Desktop\TelloWebApi\TelloWebApi\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\Clean__Laptop\Desktop\TelloWebApi\TelloWebApi\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll
