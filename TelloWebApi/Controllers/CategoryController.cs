@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TelloWebApi.Data;
 using TelloWebApi.Dtos.PaginationDtos;
-using TelloWebApi.Dtos.ProductDtos.ProductReturnDto;
 using TelloWebApi.Models;
 
 namespace TelloWebApi.Controllers
@@ -33,38 +30,57 @@ namespace TelloWebApi.Controllers
             return Ok(dbCategories);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult>GetProduct(int id,int page=1,int size=5)
+        public async Task<IActionResult> GetProduct(int id, int page = 1, int size = 6)
         {
             IQueryable<PaginationReturnDto> query = _context.Products
                 .Include(p => p.Photos)
                 .Include(p => p.Category)
+                .Include(p => p.ProductColors)
+                .ThenInclude(p => p.Colors)
                 .Where(p => !p.isDeleted && p.CategoryId == id)
                 .Select(x => new PaginationReturnDto
-                 {
-                     Id = x.Id,
-                     Title = x.Title,
-                     Description =x.Description,
-                     NewPrice = x.NewPrice,
-                     OldPrice =x.OldPrice,
-                     CategoryTitle =x.Category.Title,
-                     inStock =x.inStock,
-                     Photos = x.Photos.Select(x => new Photo
-                     {
-                         Path = x.Path,
-                         IsMain = x.IsMain
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    CategoryId = x.CategoryId,
+                    Description = x.Description,
+                    NewPrice = x.NewPrice,
+                    OldPrice = x.OldPrice,
+                    CategoryTitle = x.Category.Title,
+                    
+                    inStock = x.inStock,
+                  
+                    Colors = x.ProductColors.Select(x => new Color
+                    {
+                        Id = x.Colors.Id,
+                        Code = x.Colors.Code,
+                    }).ToList(),
+                   
+                    Photos = x.Photos.Select(x => new Photo
+                    {
+                        Path = x.Path,
+                        IsMain = x.IsMain
 
-                     }).ToList()
-                 });
+                    }).ToList()
+                });
 
 
             var totalCount = await query.CountAsync();
-            var result = await query.Skip((page-1)* size).Take(size).ToListAsync();
-         
+            
+            var result = await query.Skip((page - 1) * size).Take(size).ToListAsync();
+            
 
             return Ok(new { totalCount, result });
- 
+
         }
-        
+
+        [HttpGet("brand")]
+        public IActionResult GetBrand()
+        {
+            List<Brand> brands = _context.Brand.ToList();
+            return Ok(brands);
+        }
+
 
     }
 }

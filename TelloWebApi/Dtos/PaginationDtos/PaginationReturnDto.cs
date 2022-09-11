@@ -12,9 +12,10 @@ namespace TelloWebApi.Dtos.PaginationDtos
         public Nullable<double> OldPrice { get; set; }
         public string Title { get; set; }
         public string CategoryTitle { get; set; }
-
+        public int CategoryId { get; set; }
         public string Description { get; set; }
-
+        public Brand Brand { get; set; }
+        public List<Color> Colors { get; set; }
         public List<Photo> Photos { get; set; }
 
     
