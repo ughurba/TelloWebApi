@@ -58,12 +58,16 @@ namespace TelloWebApi.Controllers
         {
             Product product = _context.Products.Include(p => p.Photos)
                 .Include(p => p.ProductColors)
+                .ThenInclude(p=>p.Colors)
                 .Include(p => p.ProductStorages)
+                .ThenInclude(p=>p.Storage)
                 .Include(p => p.Ratings)
                 .Include(p => p.ProductDetails)
                 .Include(p => p.Favorits)
                 .Include(p => p.Comments)
+                .ThenInclude(c=>c.AppUser)
                 .FirstOrDefault(p => p.Id == id && !p.isDeleted);
+
             return Ok(product);
         }
 

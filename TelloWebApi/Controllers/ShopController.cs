@@ -27,5 +27,7 @@ namespace TelloWebApi.Controllers
             List<Brand> brands = _context.Brand.ToList();
             return Ok();
         }
+
+        
     }
 }

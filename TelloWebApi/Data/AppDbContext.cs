@@ -12,7 +12,7 @@ namespace TelloWebApi.Data
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
+            
             base.OnModelCreating(builder);
         }
         public DbSet<Category> Categories { get; set; }

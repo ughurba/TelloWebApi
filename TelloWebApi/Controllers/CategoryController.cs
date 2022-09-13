@@ -37,6 +37,7 @@ namespace TelloWebApi.Controllers
                 .Include(p => p.Category)
                 .Include(p => p.ProductColors)
                 .ThenInclude(p => p.Colors)
+                .Include(p=>p.ProductDetails)
                 .Where(p => !p.isDeleted && p.CategoryId == id)
                 .Select(x => new PaginationReturnDto
                 {
