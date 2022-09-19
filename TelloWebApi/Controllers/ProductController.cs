@@ -107,7 +107,7 @@ namespace TelloWebApi.Controllers
         [HttpGet("newArrival")]
         public IActionResult GetNewArrivalProduct()
         {
-            var from = DateTime.UtcNow.AddDays(-10);
+            var from = DateTime.UtcNow.AddDays(-20);
             IQueryable<ProductReturnDto> query = _context.Products
                  .Include(p => p.Category)
                 .Where(p => p.CreatedDate >= from)

@@ -120,7 +120,7 @@ namespace TelloWebApi.Controllers
         [Authorize]
         public async Task<IActionResult> Plus(int id)
         {
-
+            double total = 0;
             Product dbProduct = _context.Products.Include(p => p.Photos).FirstOrDefault(p => p.Id == id);
             List<object> frontBaskets = new List<object>();
             var obj = new object();
@@ -136,9 +136,15 @@ namespace TelloWebApi.Controllers
 
                     await _context.SaveChangesAsync();
 
-                    List<BasketItem> basketItems = _context.BasketItems.Where(b => b.AppUserId == userId).ToList();
+                    List<BasketItem> basketItems = _context.BasketItems.Where(b => b.AppUserId == userId && b.ProductId == id).ToList();
+
+                    List<BasketItem> dbBasketItems = _context.BasketItems.Where(b => b.AppUserId == userId).ToList();
 
 
+                    foreach (var item in dbBasketItems)
+                    {
+                        total += item.Sum;
+                    }
                     foreach (var item in basketItems)
                     {
                         obj = new
@@ -157,14 +163,14 @@ namespace TelloWebApi.Controllers
 
 
 
-            return Ok(frontBaskets);
+            return Ok(new {total, frontBaskets});
         }
 
         [HttpPut("minus/{id}")]
         [Authorize]
         public async Task<IActionResult> Minus(int? id)
         {
-
+            double total = 0;
             Product dbProduct = _context.Products.Include(p => p.Photos).FirstOrDefault(p => p.Id == id);
             List<object> frontBaskets = new List<object>();
 
@@ -181,7 +187,15 @@ namespace TelloWebApi.Controllers
                     isExist.Count--;
                     isExist.Sum = isExist.Count * isExist.Price;
                     await _context.SaveChangesAsync();
-                    List<BasketItem> basketItems = _context.BasketItems.Where(b => b.AppUserId == userId).ToList();
+                    List<BasketItem> basketItems = _context.BasketItems.Where(b => b.AppUserId == userId && b.ProductId == id).ToList();
+
+                    List<BasketItem> dbBasketItems = _context.BasketItems.Where(b => b.AppUserId == userId).ToList();
+
+
+                    foreach (var item in dbBasketItems)
+                    {
+                        total += item.Sum;
+                    }
                     foreach (var item in basketItems)
                     {
 
@@ -198,7 +212,7 @@ namespace TelloWebApi.Controllers
 
                 }
             }
-            return Ok(frontBaskets);
+            return Ok(new { total, frontBaskets });
 
         }
         [HttpDelete("{id}")]
@@ -206,9 +220,9 @@ namespace TelloWebApi.Controllers
 
         public async Task<IActionResult> Remove(int? id)
         {
-            try
-            {
+           
 
+                double total = 0;
                 Product dbProduct = _context.Products.Include(p => p.Photos).FirstOrDefault(p => p.Id == id);
                 string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
                 var userId = Helper.Helper.DecodeToken(UserToken);
@@ -220,30 +234,14 @@ namespace TelloWebApi.Controllers
                 }
                 await _context.SaveChangesAsync();
                 List<BasketItem> basketItems = _context.BasketItems.Where(b => b.AppUserId == userId).ToList();
-                List<object> frontBaskets = new List<object>();
-                var obj = new object();
+              
                 foreach (var item in basketItems)
                 {
-
-                    obj = new
-                    {
-                        Count = basketItems.Count(),
-                        Sum = item.Sum,
-
-                    };
-                    frontBaskets.Add(obj);
+                    total += item.Sum;
+                  
                 }
-                return Ok(frontBaskets);
-
-
-
-             
-            }
-            catch
-            {
-                return BadRequest();
-            }
-
+              
+                return Ok(new { total});
 
         }
 
