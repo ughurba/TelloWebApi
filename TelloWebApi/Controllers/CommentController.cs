@@ -27,10 +27,10 @@ namespace TelloWebApi.Controllers
         [HttpPost]
         public IActionResult Create(CommentCreateDto commentCreateDto)
         {
-            DateTime dateTime = DateTime.Now;
+            
             Comment comment = new Comment()
             {
-                CreateTime = dateTime,
+                CreateTime = commentCreateDto.CreateTime,
                 AppUserId = commentCreateDto.AppUserId,
                 Content = commentCreateDto.Content,
                 ProductId = commentCreateDto.ProductId
@@ -41,6 +41,14 @@ namespace TelloWebApi.Controllers
             _context.Add(comment);
             _context.SaveChanges();
             return Ok();
+        }
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            Comment comment = _context.Comments.FirstOrDefault(c => c.Id == id);
+            _context.Comments.Remove(comment);
+            _context.SaveChanges();
+            return StatusCode(200);
         }
         [HttpGet("{id}")]
         public IActionResult GetAll(int id)

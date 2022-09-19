@@ -28,6 +28,13 @@ namespace TelloWebApi.Controllers
             return Ok();
         }
 
+        [HttpGet("")]
+        public IActionResult FilterBrand(int id)
+        {
+            List<Product> products = _context.Products.Where(p =>p.BrandId == id).ToList();
+            return Ok(products);
+        }
+
         
     }
 }

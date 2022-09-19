@@ -11,6 +11,7 @@ namespace TelloWebApi.Models
    
         public List <Comment> Comments { get; set; }
         public List <Favorit> Favorits { get; set; }
+        public List<BasketItem> BasketItems { get; set; }
 
     }
 }

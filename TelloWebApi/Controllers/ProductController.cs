@@ -65,6 +65,7 @@ namespace TelloWebApi.Controllers
                 .Include(p => p.ProductDetails)
                 .Include(p => p.Favorits)
                 .Include(p => p.Comments)
+                .Include(p=>p.BasketItems)
                 .ThenInclude(c=>c.AppUser)
                 .FirstOrDefault(p => p.Id == id && !p.isDeleted);
 
@@ -279,5 +280,6 @@ namespace TelloWebApi.Controllers
             _context.SaveChanges();
             return StatusCode(200);
         }
+        
     }
 }

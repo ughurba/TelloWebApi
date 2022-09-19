@@ -25,6 +25,7 @@ namespace TelloWebApi.Models
         public List<ProductColor> ProductColors { get; set; }
         public List<ProductDetails> ProductDetails { get; set; }
         public List<ProductStorage> ProductStorages { get; set; }
+        public List<BasketItem> BasketItems { get; set; }
         public List<Rating> Ratings { get; set; }
         public List <Favorit> Favorits{ get; set; }
 
