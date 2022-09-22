@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using TelloWebApi.Data;
-using TelloWebApi.Dtos.ShopDtos.ShopReturnDto;
 using TelloWebApi.Models;
 
 namespace TelloWebApi.Controllers
@@ -31,10 +31,26 @@ namespace TelloWebApi.Controllers
         [HttpGet("")]
         public IActionResult FilterBrand(int id)
         {
-            List<Product> products = _context.Products.Where(p =>p.BrandId == id).ToList();
+            List<Product> products = _context.Products.Where(p => p.BrandId == id).ToList();
             return Ok(products);
         }
+        [HttpGet("search")]
+        public IActionResult SearchProduct(string search)
+        {
 
-        
+            List<Product> result = _context.Products
+                .Include(p => p.Photos)
+                .Include(p => p.Category)
+                .Include(p => p.ProductColors)
+                .ThenInclude(p => p.Colors)
+                .Include(p => p.ProductDetails)
+                .OrderBy(p => p.Id)
+                .Where(p => p.Title.ToLower()
+                .Contains(search.ToLower()))
+                .ToList();
+
+            return Ok(new { result });
+        }
+
     }
 }

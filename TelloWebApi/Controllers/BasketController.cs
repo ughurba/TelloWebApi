@@ -98,7 +98,7 @@ namespace TelloWebApi.Controllers
 
 
             await _context.SaveChangesAsync();
-            List<BasketItem> basketItems = _context.BasketItems.Where(b => b.AppUserId == userId).ToList();
+            List<BasketItem> basketItems = _context.BasketItems.Include(p=>p.Product).Where(b => b.AppUserId == userId).ToList();
 
          
             foreach (var item in basketItems)
@@ -220,8 +220,7 @@ namespace TelloWebApi.Controllers
 
         public async Task<IActionResult> Remove(int? id)
         {
-           
-
+  
                 double total = 0;
                 Product dbProduct = _context.Products.Include(p => p.Photos).FirstOrDefault(p => p.Id == id);
                 string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
