@@ -58,15 +58,15 @@ namespace TelloWebApi.Controllers
         {
             Product product = _context.Products.Include(p => p.Photos)
                 .Include(p => p.ProductColors)
-                .ThenInclude(p=>p.Colors)
+                .ThenInclude(p => p.Colors)
                 .Include(p => p.ProductStorages)
-                .ThenInclude(p=>p.Storage)
+                .ThenInclude(p => p.Storage)
                 .Include(p => p.Ratings)
                 .Include(p => p.ProductDetails)
                 .Include(p => p.Favorits)
                 .Include(p => p.Comments)
-                .Include(p=>p.BasketItems)
-                .ThenInclude(c=>c.AppUser)
+                .Include(p => p.BasketItems)
+                .ThenInclude(c => c.AppUser)
                 .FirstOrDefault(p => p.Id == id && !p.isDeleted);
 
             return Ok(product);
@@ -74,7 +74,7 @@ namespace TelloWebApi.Controllers
 
         [HttpGet("bestSelling")]
         public IActionResult GetBestSellingProduct()
-        { 
+        {
             IQueryable<ProductReturnDto> query = _context.Ratings
               .Include(r => r.Product)
                 .ThenInclude(p => p.Photos)
@@ -93,7 +93,7 @@ namespace TelloWebApi.Controllers
                   inStock = x.Product.inStock,
                   Photos = x.Product.Photos.Select(x => new Photo
                   {
-                       Id = x.ProductId,
+                      Id = x.ProductId,
                       Path = x.Path,
                       IsMain = x.IsMain
 
@@ -134,7 +134,6 @@ namespace TelloWebApi.Controllers
 
 
         }
-
 
         [HttpPost("createProduct")]
         public IActionResult Create([FromForm] ProductCreateDto productCreateDto)
@@ -280,7 +279,7 @@ namespace TelloWebApi.Controllers
             _context.SaveChanges();
             return StatusCode(200);
         }
-     
-        
+
+
     }
 }

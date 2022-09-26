@@ -434,6 +434,9 @@ namespace TelloWebApi.Migrations
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("isFavorite")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");

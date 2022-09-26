@@ -10,7 +10,7 @@ namespace TelloWebApi.Models
         public string Description { get; set; }
         public Nullable<double> OldPrice { get; set; }
         public double NewPrice { get; set; }
-   
+        public bool isFavorite { get; set; }
         public bool isDeleted { get; set; }
         public bool inStock { get; set; }
         public int StockCount { get; set; }

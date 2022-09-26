@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TelloWebApi.Data;
 using TelloWebApi.Dtos.PaginationDtos;
 using TelloWebApi.Models;
@@ -30,15 +31,21 @@ namespace TelloWebApi.Controllers
             return Ok(dbCategories);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProduct(int id, double minPrice, double maxPrice,int page = 1, int size = 6)
+        public async Task<IActionResult> GetProduct(int id, [FromQuery] int?[] brandIds,int orderBy, double minPrice, double maxPrice, bool discount = false, int page = 1, int size = 6)
         {
             IQueryable<PaginationReturnDto> query = _context.Products
                 .Include(p => p.Photos)
+                .Include(p => p.Brand)
                 .Include(p => p.Category)
                 .Include(p => p.ProductColors)
                 .ThenInclude(p => p.Colors)
-                .Include(p=>p.ProductDetails)
-                .Where(p => !p.isDeleted && p.CategoryId == id && p.NewPrice >= minPrice && p.NewPrice <= maxPrice)
+                .Include(p => p.ProductDetails)
+                .Where(p => !p.isDeleted 
+                            && p.CategoryId == id 
+                            && p.NewPrice >= minPrice 
+                            && p.NewPrice <= maxPrice 
+                            && (brandIds.Length == 0 ? true : brandIds.Contains(p.BrandId))
+                            && (discount ? p.OldPrice > 0 : true))
                 .Select(x => new PaginationReturnDto
                 {
                     Id = x.Id,
@@ -48,15 +55,15 @@ namespace TelloWebApi.Controllers
                     NewPrice = x.NewPrice,
                     OldPrice = x.OldPrice,
                     CategoryTitle = x.Category.Title,
-                    
+
                     inStock = x.inStock,
-                  
+
                     Colors = x.ProductColors.Select(x => new Color
                     {
                         Id = x.Colors.Id,
                         Code = x.Colors.Code,
                     }).ToList(),
-                   
+
                     Photos = x.Photos.Select(x => new Photo
                     {
                         Path = x.Path,
@@ -67,13 +74,62 @@ namespace TelloWebApi.Controllers
 
 
             var totalCount = await query.CountAsync();
-            
+
+            query = orderBy == 0 ? query.OrderBy(p => p.NewPrice) : query.OrderByDescending(p => p.NewPrice);
+         
+
             var result = await query.Skip((page - 1) * size).Take(size).ToListAsync();
-            
 
             return Ok(new { totalCount, result });
 
         }
+
+        //[HttpGet("Discount/{id}")]
+
+        //public async Task<IActionResult> DiscountProduct(int id, double minPrice, double maxPrice, int page = 1, int size = 6)
+        //{
+
+        //    IQueryable<PaginationReturnDto> query = _context.Products
+        //        .Include(p => p.Photos)
+        //        .Include(p => p.Category)
+        //        .Include(p => p.ProductColors)
+        //        .ThenInclude(p => p.Colors)
+        //        .Include(p => p.ProductDetails)
+        //        .Where(p => !p.isDeleted && p.CategoryId == id && p.NewPrice >= minPrice && p.NewPrice <= maxPrice && p.OldPrice > 0)
+        //        .Select(x => new PaginationReturnDto
+        //        {
+        //            Id = x.Id,
+        //            Title = x.Title,
+        //            CategoryId = x.CategoryId,
+        //            Description = x.Description,
+        //            NewPrice = x.NewPrice,
+        //            OldPrice = x.OldPrice,
+        //            CategoryTitle = x.Category.Title,
+
+        //            inStock = x.inStock,
+
+        //            Colors = x.ProductColors.Select(x => new Color
+        //            {
+        //                Id = x.Colors.Id,
+        //                Code = x.Colors.Code,
+        //            }).ToList(),
+
+        //            Photos = x.Photos.Select(x => new Photo
+        //            {
+        //                Path = x.Path,
+        //                IsMain = x.IsMain
+
+        //            }).ToList()
+        //        });
+
+
+        //    var totalCount = await query.CountAsync();
+
+        //    var result = await query.Skip((page - 1) * size).Take(size).ToListAsync();
+
+
+        //    return Ok(new { totalCount, result });
+        //}
 
         [HttpGet("brand")]
         public IActionResult GetBrand()
