@@ -24,9 +24,5 @@
     <PackageReference Include="System.Text.Json" Version="6.0.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\img\" />
-  </ItemGroup>
-
 
 </Project>

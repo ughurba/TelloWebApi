@@ -13,6 +13,7 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductReturnDto
         public  string Title { get; set; }
         public string CategoryTitle {get; set; }
 
+        public int StockCount { get; set; }
         public string Description { get; set; }
 
         public string PhotoPath { get; set; }

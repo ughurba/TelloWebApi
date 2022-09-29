@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TelloWebApi.Data;
-using TelloWebApi.Dtos.ProductDtos.ProductCreateDto;
 using TelloWebApi.Dtos.ProductDtos.ProductReturnDto;
-using TelloWebApi.Extentions;
 using TelloWebApi.Models;
 
 namespace TelloWebApi.Controllers
@@ -135,129 +133,8 @@ namespace TelloWebApi.Controllers
 
         }
 
-        [HttpPost("createProduct")]
-        public IActionResult Create([FromForm] ProductCreateDto productCreateDto)
-        {
 
 
-            foreach (var item in productCreateDto.ChildPhotos)
-            {
-
-                if (item == null)
-                {
-
-                    return BadRequest("Bosqoyma");
-                }
-                if (!item.IsImage())
-                {
-
-                    return BadRequest("only Photo");
-
-                }
-                if (item.ValidSize(200))
-                {
-                    return BadRequest("olcu uygun deyil");
-                }
-
-
-            }
-
-            if (productCreateDto.Photos == null)
-            {
-
-                return BadRequest("Bosqoyma");
-            }
-            if (!productCreateDto.Photos.IsImage())
-            {
-
-                return BadRequest("only Photo");
-
-            }
-            if (productCreateDto.Photos.ValidSize(200))
-            {
-                return BadRequest("olcu uygun deyil");
-            }
-
-            List<Photo> photos = new List<Photo>();
-
-            foreach (var item in productCreateDto.ChildPhotos)
-            {
-
-                Photo photo = new Photo
-                {
-                    Path = item.SaveImage(_env, "img"),
-                    IsMain = false
-                };
-                photos.Add(photo);
-            }
-
-            Photo isMainPhoto = new Photo
-            {
-                Path = productCreateDto.Photos.SaveImage(_env, "img"),
-                IsMain = true,
-            };
-            photos.Add(isMainPhoto);
-
-
-
-            Product newProduct = new Product
-            {
-                Title = productCreateDto.Title,
-                Description = productCreateDto.Description,
-                NewPrice = productCreateDto.NewPrice,
-                OldPrice = productCreateDto.OldPrice,
-                inStock = true,
-                BrandId = productCreateDto.BrandId,
-                CategoryId = productCreateDto.CategoryId,
-                StockCount = productCreateDto.StockCount,
-                CreatedDate = DateTime.Now,
-                Photos = photos,
-                ProductColors = new List<ProductColor>
-                {
-                    new ProductColor
-                    {
-                        Colors =  new Color
-                         {
-                             Code = productCreateDto.Color,
-
-                         }
-                    }
-
-                },
-                ProductStorages = new List<ProductStorage>
-                {
-                    new ProductStorage
-                    {
-                        Storage =  new Storage
-                         {
-                             Value = productCreateDto.Storage,
-
-                         }
-                    }
-
-                }
-
-            };
-
-            _context.Add(newProduct);
-            _context.SaveChanges();
-            return StatusCode(201);
-        }
-
-        [HttpGet("brandAndCategoryIds")]
-        public IActionResult GetBrandAndCategoryId()
-        {
-            List<Brand> dbBrands = _context.Brand.Where(b => !b.IsDeleted).ToList();
-
-            List<Category> dbCategory = _context.Categories.ToList();
-
-            var obj = new
-            {
-                Brand = dbBrands,
-                Category = dbCategory
-            };
-            return Ok(obj);
-        }
 
         [HttpPut]
         public IActionResult Update(Product product)
@@ -267,18 +144,7 @@ namespace TelloWebApi.Controllers
 
 
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            Product p = _context.Products.FirstOrDefault(p => p.Id == id);
-            if (p == null)
-            {
-                return NotFound();
-            }
-            p.isDeleted = true;
-            _context.SaveChanges();
-            return StatusCode(200);
-        }
+       
 
 
     }

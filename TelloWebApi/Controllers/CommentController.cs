@@ -40,7 +40,9 @@ namespace TelloWebApi.Controllers
 
             _context.Add(comment);
             _context.SaveChanges();
-            return Ok();
+            List<Comment> comments = _context.Comments.Include(c => c.AppUser).Where(c => c.ProductId == commentCreateDto.ProductId).ToList();
+
+            return Ok(comments);
         }
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
