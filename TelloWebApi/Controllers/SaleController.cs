@@ -36,12 +36,7 @@ namespace TelloWebApi.Controllers
             AppUser user = await _userManager.FindByIdAsync(userId);
 
             Order order = new Order();
-            //AppUser appUser = new AppUser
-            //{
-            //    Name = saleCreateDto.FirstName,
-            //    Email = saleCreateDto.Email,
-            //    Surname = saleCreateDto.LastName,
-            //};
+
             order.AppUserId = userId;
             order.AppUser = user;
             order.Address = saleCreateDto.Address;
@@ -58,11 +53,11 @@ namespace TelloWebApi.Controllers
             {
                 foreach (var product in dbProducts)
                 {
-                    if(product.Id == item.ProductId)
+                    if (product.Id == item.ProductId)
                     {
                         product.StockCount -= item.Count;
                     }
-                    
+
                 }
                 OrderItem orderItem = new OrderItem()
                 {
@@ -79,6 +74,31 @@ namespace TelloWebApi.Controllers
             await _context.SaveChangesAsync();
 
             return StatusCode(200);
+        }
+
+        [HttpGet("getAll")]
+        [Autorize]
+        public IActionResult GetOrderProduct()
+        {
+            string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var userId = Helper.Helper.DecodeToken(UserToken);
+
+            List<SaleReturnDto> saleReturnDto = _context.Orders
+                .Include(x => x.OrderItems)
+                .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.Photos)
+                .Where(x => x.AppUserId == userId)
+                .Select(x => new SaleReturnDto
+                {
+                    Total = x.OrderItems.Select(i=>i.Total).Sum(), 
+                    Photos = x.OrderItems.SelectMany(i=>i.Product.Photos).ToList(),
+                    Date = x.CreatedAt.ToString("MM/dd/yyyy HH:mm"),
+                    OrderStatus = x.OrderStatus
+                }).ToList();
+
+
+
+            return Ok(saleReturnDto);
         }
     }
 }
