@@ -28,5 +28,7 @@ namespace TelloWebApi.Data
         public DbSet<Storage> Storages { get; set; }
         public DbSet<Brand> Brand { get; set; }
         public DbSet<BasketItem> BasketItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet <OrderItem> OrderItems{ get; set; }
     }
 }

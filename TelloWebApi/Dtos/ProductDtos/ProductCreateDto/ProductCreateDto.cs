@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using TelloWebApi.Models;
 
 namespace TelloWebApi.Dtos.ProductDtos.ProductCreateDto
@@ -9,6 +10,7 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductCreateDto
     public class ProductCreateDto
     {
         public int Id { get; set; }
+     
         public string Title { get; set; }
         public string Description { get; set; }
         public int OldPrice { get; set; }

@@ -159,17 +159,19 @@ namespace TelloWebApi.Controllers.AdminController
 
         public IActionResult GetOne(int id)
         {
-            ProductReturnGetOneAdmin productReturnGetOneAdmin = _context.Products.Select(x=>new ProductReturnGetOneAdmin
+            Product product = _context.Products.FirstOrDefault(x => x.Id == id);
+            ProductReturnGetOneAdmin productReturnGetOneAdmin = new ProductReturnGetOneAdmin()
             {
-                Id = id,
-                Description = x.Description,
-                NewPrice=x.NewPrice,
-                OldPrice=x.OldPrice,
-                StockCount=x.StockCount,
-                BrandId=x.BrandId,
-                CategoryId = x.CategoryId,
-                Title = x.Title,
-            }).FirstOrDefault(x => x.Id == id);
+                Id = product.Id,
+                Description = product.Description,
+                NewPrice = product.NewPrice,
+                OldPrice = product.OldPrice,
+                StockCount = product.StockCount,
+                BrandId = product.BrandId,
+                CategoryId = product.CategoryId,
+                Title = product.Title,
+            };
+
 
             return Ok(productReturnGetOneAdmin);
         }
@@ -195,7 +197,7 @@ namespace TelloWebApi.Controllers.AdminController
                 StockCount = p.StockCount
             });
 
-            
+
             var result = query.ToList();
             return Ok(result);
 
@@ -204,7 +206,7 @@ namespace TelloWebApi.Controllers.AdminController
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-         
+
 
 
             List<BasketItem> basketItems = _context.BasketItems.Include(b => b.Product).Where(b => b.ProductId == id).ToList();
@@ -228,13 +230,14 @@ namespace TelloWebApi.Controllers.AdminController
         }
 
         [HttpPut("updateProduct")]
-        public async Task<IActionResult> Update(ProductCreateDto product)
+        [Authorize]
+        public async Task<IActionResult> Update([FromForm]ProductCreateDto product)
         {
             List<Photo> productImages = new List<Photo>();
-          
 
-            Product products = _context.Products.Include(p => p.Photos).FirstOrDefault(c => c.Id == product.Id);
-            Product productName = _context.Products.FirstOrDefault(c => c.Title.ToLower() == product.Title.ToLower());
+
+            Product dbProducts = _context.Products.Include(p => p.Photos).FirstOrDefault(c => c.Id == product.Id);
+            Product productName = _context.Products.FirstOrDefault(p => p.Title.ToLower() == dbProducts.Title.ToLower());
 
             if (product.Photos != null)
             {
@@ -275,25 +278,25 @@ namespace TelloWebApi.Controllers.AdminController
                 {
                     return BadRequest("olcu uygun deyil");
                 }
-            
+
 
 
             }
             if (productName != null)
             {
-                if (productName.Title != products.Title)
+                if (productName.Title != dbProducts.Title)
                 {
                     return BadRequest("bu adli product var ");
                 }
             }
 
 
-            products.Title = product.Title;
-            products.NewPrice = product.NewPrice;
-            products.OldPrice = product.OldPrice;
-            products.Description = product.Description;
-            products.StockCount = product.StockCount;
-            products.inStock = product.inStock;
+            dbProducts.Title = product.Title;
+            dbProducts.NewPrice = product.NewPrice;
+            dbProducts.OldPrice = product.OldPrice;
+            dbProducts.Description = product.Description;
+            dbProducts.StockCount = product.StockCount;
+            dbProducts.inStock = product.inStock;
 
 
             await _context.SaveChangesAsync();

@@ -17,7 +17,6 @@ namespace TelloWebApi.Models
         public Nullable<DateTime> CreatedDate { get; set; }
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-
         public int BrandId { get; set; }
         public Brand Brand { get; set; }
         public List<Comment> Comments { get; set; }
@@ -25,6 +24,7 @@ namespace TelloWebApi.Models
         public List<ProductColor> ProductColors { get; set; }
         public List<ProductDetails> ProductDetails { get; set; }
         public List<ProductStorage> ProductStorages { get; set; }
+        public List<OrderItem> OrderItems { get; set; }
         public List<BasketItem> BasketItems { get; set; }
         public List<Rating> Ratings { get; set; }
         public List <Favorit> Favorits{ get; set; }
