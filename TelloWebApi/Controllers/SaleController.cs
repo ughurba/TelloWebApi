@@ -36,7 +36,7 @@ namespace TelloWebApi.Controllers
             AppUser user = await _userManager.FindByIdAsync(userId);
 
             Order order = new Order();
-
+            
             order.AppUserId = userId;
             order.AppUser = user;
             order.Address = saleCreateDto.Address;
@@ -60,7 +60,11 @@ namespace TelloWebApi.Controllers
 
                 }
                 OrderItem orderItem = new OrderItem()
-                {
+                
+                {  
+                    
+                    Storage = item.Storage,
+                    Code = item.Code,
                     Count = item.Count,
                     Total = item.Sum,
                     Product = item.Product,
@@ -76,9 +80,32 @@ namespace TelloWebApi.Controllers
             return StatusCode(200);
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("getOrderItemAll")]
         [Autorize]
-        public IActionResult GetOrderProduct()
+        public IActionResult GetOrderItem(int orderId)
+        {
+            string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
+            var userId = Helper.Helper.DecodeToken(UserToken);
+            List<OrderItemSaleReturnDto> OrderItemSaleReturnDto = _context.OrderItems
+                .Where(x => x.OrderId == orderId)
+                .Include(x=>x.Product)
+                .Select(x=> new OrderItemSaleReturnDto
+                {
+                    Id = x.Id,
+                    Title = x.Product.Title,
+                    Code = x.Code,
+                    Count = x.Count,
+                    Storage =x.Storage,
+                    Total = x.Total,
+                    Photos = x.Product.Photos
+                }).ToList();
+
+            return Ok(OrderItemSaleReturnDto);
+        }
+
+        [HttpGet("getOrderAll")]
+        [Autorize]
+        public IActionResult GetOrder()
         {
             string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
             var userId = Helper.Helper.DecodeToken(UserToken);
@@ -90,6 +117,7 @@ namespace TelloWebApi.Controllers
                 .Where(x => x.AppUserId == userId)
                 .Select(x => new SaleReturnDto
                 {
+                    Id = x.Id,
                     Total = x.OrderItems.Select(i=>i.Total).Sum(), 
                     Photos = x.OrderItems.SelectMany(i=>i.Product.Photos).ToList(),
                     Date = x.CreatedAt.ToString("MM/dd/yyyy HH:mm"),
