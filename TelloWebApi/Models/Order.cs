@@ -20,7 +20,8 @@ namespace TelloWebApi.Models
     public enum OrderStatus
     {
         Pending,
-        Shipped,
+        Accept,
+        Reject
     }
 }
 

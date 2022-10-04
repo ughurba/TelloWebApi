@@ -52,5 +52,34 @@ namespace TelloWebApi.Controllers.AdminController
 
             return Ok(saleReturnAdminDto);
         }
+        [HttpGet("OrderItem")]
+        [Autorize]
+        public IActionResult GetAllOrderItem(int orderId)
+        {
+            List<OrderItemSaleReturnDto> OrderItemSaleReturnDto = _context.OrderItems
+                 .Where(x => x.OrderId == orderId)
+                 .Include(x => x.Product)
+                 .Select(x => new OrderItemSaleReturnDto
+                 {
+                     Id = x.Id,
+                     Title = x.Product.Title,
+                     Code = x.Code,
+                     Count = x.Count,
+                     Storage = x.Storage,
+                     Total = x.Total,
+                     Photos = x.Product.Photos
+                 }).ToList();
+
+            return Ok(OrderItemSaleReturnDto);
+        }
+        [HttpPut]
+        [Autorize]
+        public IActionResult UpdateOrderStatus(int orderId,int orderStatus)
+        {
+            Order order = _context.Orders.FirstOrDefault(x => x.Id == orderId);
+            order.OrderStatus = (OrderStatus)orderStatus;
+            _context.SaveChanges();
+            return StatusCode(200);
+        }
     }
 }
