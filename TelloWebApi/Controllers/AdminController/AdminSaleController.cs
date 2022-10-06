@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace TelloWebApi.Controllers.AdminController
         }
 
         [HttpGet("AllOrder")]
-        [Autorize]
+        [Authorize]
         public IActionResult GetAllOrder()
         {
 
@@ -53,7 +54,7 @@ namespace TelloWebApi.Controllers.AdminController
             return Ok(saleReturnAdminDto);
         }
         [HttpGet("OrderItem")]
-        [Autorize]
+        [Authorize]
         public IActionResult GetAllOrderItem(int orderId)
         {
             List<OrderItemSaleReturnDto> OrderItemSaleReturnDto = _context.OrderItems
@@ -73,7 +74,7 @@ namespace TelloWebApi.Controllers.AdminController
             return Ok(OrderItemSaleReturnDto);
         }
         [HttpPut]
-        [Autorize]
+        [Authorize]
         public IActionResult UpdateOrderStatus(int orderId,int orderStatus)
         {
             Order order = _context.Orders.FirstOrDefault(x => x.Id == orderId);

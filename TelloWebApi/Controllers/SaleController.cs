@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace TelloWebApi.Controllers
             _userManager = userManager;
         }
         [HttpPost]
-        [Autorize]
+        [Authorize]
         public async Task<IActionResult> SaleStart(SaleCreateDto saleCreateDto)
         {
             string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
@@ -81,7 +82,7 @@ namespace TelloWebApi.Controllers
         }
 
         [HttpGet("getOrderItemAll")]
-        [Autorize]
+        [Authorize]
         public IActionResult GetOrderItem(int orderId)
         {
             string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
@@ -104,7 +105,7 @@ namespace TelloWebApi.Controllers
         }
 
         [HttpGet("getOrderAll")]
-        [Autorize]
+        [Authorize]
         public IActionResult GetOrder()
         {
             string UserToken = HttpContext.Request.Headers["Authorization"].ToString();

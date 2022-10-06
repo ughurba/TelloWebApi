@@ -23,19 +23,8 @@ namespace TelloWebApi.Controllers
             _context = context;
         }
 
-        [HttpGet("getAllBrands")]
-        public IActionResult GetBrand()
-        {
-            List<Brand> brands = _context.Brand.ToList();
-            return Ok();
-        }
 
-        [HttpGet("")]
-        public IActionResult FilterBrand(int id)
-        {
-            List<Product> products = _context.Products.Where(p => p.BrandId == id).ToList();
-            return Ok(products);
-        }
+
         [HttpPost("search")]
         public IActionResult SearchProduct(string search)
         {
@@ -65,52 +54,46 @@ namespace TelloWebApi.Controllers
             var userId = Helper.Helper.DecodeToken(UserToken);
             if (createFavoriteDto.isFavorite)
             {
-                Favorit favorit = new Favorit()
+                var favorite = _context.Favorits.FirstOrDefault(x => x.ProductId == createFavoriteDto.ProductId);
+                if(favorite == null)
                 {
-                    AppUserId = userId,
-                    PrdocutId = createFavoriteDto.ProductId
-                    
-                };
-                _context.Add(favorit);
-                _context.SaveChanges();
-                return StatusCode(201);
+                    Favorit favorit = new Favorit()
+                    {
+                        AppUserId = userId,
+                        ProductId = createFavoriteDto.ProductId
+
+                    };
+                    _context.Add(favorit);
+                    _context.SaveChanges();
+                    return StatusCode(201);
+                }
+         
+             
             }
-            Favorit dbFavorit = _context.Favorits.FirstOrDefault(f => f.PrdocutId == createFavoriteDto.ProductId && f.AppUserId == userId);
+            Favorit dbFavorit = _context.Favorits.FirstOrDefault(f => f.ProductId == createFavoriteDto.ProductId && f.AppUserId == userId);
             _context.Remove(dbFavorit);
             _context.SaveChanges();
             return StatusCode(200);
-
-
         }
+
 
         [HttpGet("favoriteGet")]
         [Authorize]
         public IActionResult GetAllFavorite()
         {
             string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
-            var userId = Helper.Helper.DecodeToken(UserToken);
-            List<Product> result = new List<Product>();
-            List<Favorit> favorits = _context.Favorits.Where(x => x.AppUserId == userId).ToList();
-            List<Product> dbProducts = _context.Products
-                .Include(p => p.Photos)
-                .Include(p => p.Category)
-                .Include(p => p.ProductColors)
-                .ThenInclude(p => p.Colors)
-                .Include(p => p.ProductDetails).ToList();
-            foreach (var product in dbProducts)
+            var userId = Helper.Helper.DecodeToken(UserToken); 
+            List<Favorit> favorits = _context.Favorits
+                .Include(x=>x.Product)
+                .ThenInclude(x=>x.Photos)
+                .Where(x => x.AppUserId == userId).ToList();
+            List<Product> products = new List<Product>();
+            foreach (var item in favorits)
             {
-                foreach (var item in favorits)
-                {
-                    if (item.PrdocutId == product.Id)
-                    {
-                        product.isFavorite = true;
-                        result.Add(product);
-                    }
-                }
+                products.Add(item.Product);
             }
-            return Ok(new{result });
+            return Ok(products); 
         }
-      
 
     }
 }

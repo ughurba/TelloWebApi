@@ -11,6 +11,7 @@ using TelloWebApi.Data;
 using TelloWebApi.Dtos.ProductDtos.ProductCreateDto;
 using TelloWebApi.Dtos.ProductDtos.ProductReturnAdminDto;
 using TelloWebApi.Dtos.ProductDtos.ProductReturnGetOneAdmin;
+using TelloWebApi.Dtos.SpecificationsDto;
 using TelloWebApi.Extentions;
 using TelloWebApi.Models;
 
@@ -304,5 +305,20 @@ namespace TelloWebApi.Controllers.AdminController
 
 
         }
+        [HttpPost("createSpec")]
+        [Authorize]
+        public IActionResult CreateSpecifications(CreateSpecifications createSpecifications)
+        {
+            ProductDetails productDetails = new ProductDetails
+            {
+                Name = createSpecifications.Key,
+                Value = createSpecifications.Value,
+                ProductId = createSpecifications.ProductId
+            };
+            _context.ProductDetails.Add(productDetails);
+            _context.SaveChanges();
+            return StatusCode(201);
+        }
     }
+    
 }

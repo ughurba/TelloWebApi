@@ -359,10 +359,7 @@ namespace TelloWebApi.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("PrdocutId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -718,9 +715,11 @@ namespace TelloWebApi.Migrations
                         .WithMany("Favorits")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("TelloWebApi.Models.Product", null)
+                    b.HasOne("TelloWebApi.Models.Product", "Product")
                         .WithMany("Favorits")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TelloWebApi.Models.Order", b =>

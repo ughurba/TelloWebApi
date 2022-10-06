@@ -79,10 +79,14 @@ namespace TelloWebApi.Controllers
           
 
             var result = await query.Skip((page - 1) * size).Take(size).ToListAsync();
+            List<int> productIdFavorite = new List<int>();
             List<Favorit> favorits = _context.Favorits.ToList();
-            
+            foreach (var item in favorits)
+            {
+                productIdFavorite.Add(item.ProductId);
+            }
            
-            return Ok(new { totalCount, result ,favorits});
+            return Ok(new { totalCount, result , productIdFavorite });
 
         }
 
