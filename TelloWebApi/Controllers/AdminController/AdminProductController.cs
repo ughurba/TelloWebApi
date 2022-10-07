@@ -344,6 +344,15 @@ namespace TelloWebApi.Controllers.AdminController
             _context.SaveChanges();
             return StatusCode(201);
         }
+        [HttpDelete("removeSpec/{productId}/{specId}")]
+        [Authorize]
+        public IActionResult RemoveSpecifications(int productId,int specId)
+        {
+            ProductDetails productDetails = _context.ProductDetails.FirstOrDefault(x => x.Id == specId && x.ProductId == productId);
+            _context.ProductDetails.Remove(productDetails);
+            _context.SaveChanges();
+            return StatusCode(200);
+        }
     }
     
 }
