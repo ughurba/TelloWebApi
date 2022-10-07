@@ -319,6 +319,31 @@ namespace TelloWebApi.Controllers.AdminController
             _context.SaveChanges();
             return StatusCode(201);
         }
+        [HttpGet("getSpecifications/{ProductId}")]
+        [Authorize]
+        public IActionResult GetAllSpecificationsProduct(int ProductId)
+        {
+            List<ProductDetails> productDetails = _context.ProductDetails.Where(x=>x.ProductId == ProductId).ToList();
+            return Ok(productDetails);
+        }
+        [HttpGet("{productId}/{specId}")]
+        [Authorize]
+        public IActionResult GetOneSpecification(int productId,int specId)
+        {
+            ProductDetails productDetail = _context.ProductDetails.FirstOrDefault(x => x.Id == specId && x.ProductId == productId);
+
+            return Ok(productDetail);
+        }
+        [HttpPut("updateSpec")]
+        [Authorize]
+        public IActionResult UpdateSpecifications(UpdateSpecificationsDto updateSpecificationsDto)
+        {
+            ProductDetails productDetails = _context.ProductDetails.FirstOrDefault(x => x.ProductId == updateSpecificationsDto.ProductId && x.Id == updateSpecificationsDto.Id);
+            productDetails.Name = updateSpecificationsDto.Key;
+            productDetails.Value = updateSpecificationsDto.Value;
+            _context.SaveChanges();
+            return StatusCode(201);
+        }
     }
     
 }
