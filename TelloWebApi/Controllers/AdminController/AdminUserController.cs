@@ -28,12 +28,20 @@ namespace TelloWebApi.Controllers.AdminController
         [Authorize]
         public async Task<IActionResult> getAllUsers()
         {
-            List<AppUser> appUsers = _userManager.Users.ToList();
+
+
             List<ReturnUserDto> returnUserDtos = new List<ReturnUserDto>();
+            List<AppUser> appUsers = _userManager.Users.ToList();
+            List<string> role = new List<string>();
+            var roles = _roleManager.Roles.ToList();
+
+            foreach (var item in roles)
+            {
+                role.Add(item.Name);
+            }
+
             foreach (var item in appUsers)
             {
-
-
                 ReturnUserDto returnUserDto = new ReturnUserDto();
                 returnUserDto.userRoles = await _userManager.GetRolesAsync(item);
                 returnUserDto.Id = item.Id;
@@ -44,9 +52,40 @@ namespace TelloWebApi.Controllers.AdminController
                 returnUserDtos.Add(returnUserDto);
 
             }
-            return Ok(returnUserDtos);
+            return Ok(new { returnUserDtos, role });
 
         }
+
+        [HttpDelete("userRemove")]
+        [Authorize]
+        public async Task<IActionResult> removeUser(string id)
+        {
+            AppUser user = await _userManager.FindByIdAsync(id);
+            await _userManager.DeleteAsync(user);
+            _context.SaveChanges();
+            return Ok();
+        }
+        [HttpPut("updateRole")]
+        [Authorize]
+
+        public async Task<IActionResult> Update(UpdateRoleDto updateRoleDto)
+        {
+            AppUser user = await _userManager.FindByIdAsync(updateRoleDto.Id);
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            await  _userManager.RemoveFromRolesAsync(user, userRoles);
+            await _userManager.AddToRoleAsync(user, updateRoleDto.Role);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+        [HttpPost("createRole/{role}")]
+        [Authorize]
+        public async Task<IActionResult> Create(string role)
+        {
+            var result = await _roleManager.CreateAsync(new IdentityRole { Name = role });
+            return Ok(result);
+        }
+
 
 
     }
