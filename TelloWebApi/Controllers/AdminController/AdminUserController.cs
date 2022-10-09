@@ -56,11 +56,29 @@ namespace TelloWebApi.Controllers.AdminController
 
         }
 
+        [HttpGet("getAllRole")]
+        [Authorize]
+        public IActionResult GetAllRoles()
+        {
+            var roles = _roleManager.Roles.ToList();
+            return Ok(roles);
+        }
         [HttpDelete("userRemove")]
         [Authorize]
         public async Task<IActionResult> removeUser(string id)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
+            List<BasketItem> basketItems = _context.BasketItems.Where(x => x.AppUserId == user.Id).ToList();
+            List<Order> orders = _context.Orders.Where(x => x.AppUserId == user.Id).ToList();
+            foreach (var item in basketItems)
+            {
+                _context.BasketItems.Remove(item);
+            }
+            foreach (var item in orders)
+            {
+                _context.Orders.Remove(item);
+            }
+            _context.SaveChanges();
             await _userManager.DeleteAsync(user);
             _context.SaveChanges();
             return Ok();
@@ -84,6 +102,14 @@ namespace TelloWebApi.Controllers.AdminController
         {
             var result = await _roleManager.CreateAsync(new IdentityRole { Name = role });
             return Ok(result);
+        }
+        [HttpDelete("removeRole")]
+        [Authorize]
+        public async Task <IActionResult> RemoveRole(string id) {
+           var role =  _roleManager.Roles.FirstOrDefault(x=>x.Id == id);
+            await _roleManager.DeleteAsync(role);
+            _context.SaveChanges();
+            return Ok();
         }
 
 

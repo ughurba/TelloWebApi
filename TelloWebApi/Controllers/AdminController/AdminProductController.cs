@@ -130,7 +130,7 @@ namespace TelloWebApi.Controllers.AdminController
                     {
                         Colors =  new Color
                          {
-                             Code = productCreateDto.Color,
+                             Code = productCreateDto.Color
 
                          }
                     }
@@ -232,7 +232,7 @@ namespace TelloWebApi.Controllers.AdminController
 
         [HttpPut("updateProduct")]
         [Authorize]
-        public async Task<IActionResult> Update([FromForm]ProductCreateDto product)
+        public async Task<IActionResult> Update([FromForm] ProductCreateDto product)
         {
             List<Photo> productImages = new List<Photo>();
 
@@ -323,12 +323,12 @@ namespace TelloWebApi.Controllers.AdminController
         [Authorize]
         public IActionResult GetAllSpecificationsProduct(int ProductId)
         {
-            List<ProductDetails> productDetails = _context.ProductDetails.Where(x=>x.ProductId == ProductId).ToList();
+            List<ProductDetails> productDetails = _context.ProductDetails.Where(x => x.ProductId == ProductId).ToList();
             return Ok(productDetails);
         }
         [HttpGet("{productId}/{specId}")]
         [Authorize]
-        public IActionResult GetOneSpecification(int productId,int specId)
+        public IActionResult GetOneSpecification(int productId, int specId)
         {
             ProductDetails productDetail = _context.ProductDetails.FirstOrDefault(x => x.Id == specId && x.ProductId == productId);
 
@@ -346,7 +346,7 @@ namespace TelloWebApi.Controllers.AdminController
         }
         [HttpDelete("removeSpec/{productId}/{specId}")]
         [Authorize]
-        public IActionResult RemoveSpecifications(int productId,int specId)
+        public IActionResult RemoveSpecifications(int productId, int specId)
         {
             ProductDetails productDetails = _context.ProductDetails.FirstOrDefault(x => x.Id == specId && x.ProductId == productId);
             _context.ProductDetails.Remove(productDetails);
@@ -354,5 +354,5 @@ namespace TelloWebApi.Controllers.AdminController
             return StatusCode(200);
         }
     }
-    
+
 }
