@@ -22,8 +22,8 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductCreateDto
         public bool isDeleted { get; set; }
 
         public List<IFormFile> ChildPhotos { get; set; }
-        public string Color{ get; set; }
-        public int Storage { get; set; }
+        public List<string >Colors{ get; set; }
+        public List<int> Storage { get; set; }
         public IFormFile Photos { get; set; }
  
 

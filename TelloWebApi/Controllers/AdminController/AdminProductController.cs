@@ -123,33 +123,28 @@ namespace TelloWebApi.Controllers.AdminController
                 CategoryId = productCreateDto.CategoryId,
                 StockCount = productCreateDto.StockCount,
                 CreatedDate = DateTime.Now,
-                Photos = photos,
-                ProductColors = new List<ProductColor>
-                {
-                    new ProductColor
-                    {
-                        Colors =  new Color
-                         {
-                             Code = productCreateDto.Color
-
-                         }
-                    }
-
-                },
-                ProductStorages = new List<ProductStorage>
-                {
-                    new ProductStorage
-                    {
-                        Storage =  new Storage
-                         {
-                             Value = productCreateDto.Storage,
-
-                         }
-                    }
-
-                }
-
+                Photos = photos
             };
+            newProduct.ProductColors = new List<ProductColor>();
+            newProduct.ProductStorages = new List<ProductStorage>();
+            foreach (var item in productCreateDto.Colors)
+            {
+                ProductColor productColor = new ProductColor();
+                Color color = new Color();
+                color.Code = item;
+                productColor.Colors = color;
+                newProduct.ProductColors.Add(productColor);
+                
+            }
+            foreach (var item in productCreateDto.Storage)
+            {
+                ProductStorage productStorage = new ProductStorage();
+                Storage storage = new Storage();
+                storage.Value= item;
+                productStorage.Storage = storage;
+                newProduct.ProductStorages.Add(productStorage);
+
+            }
 
             _context.Add(newProduct);
             _context.SaveChanges();
