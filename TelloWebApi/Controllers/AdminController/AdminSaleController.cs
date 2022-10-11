@@ -27,8 +27,7 @@ namespace TelloWebApi.Controllers.AdminController
         public IActionResult GetAllOrder()
         {
 
-            //string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
-            //var userId = Helper.Helper.DecodeToken(UserToken);
+  
 
             List<SaleReturnAdminDto> saleReturnAdminDto = _context.Orders
                 .Include(x => x.OrderItems)

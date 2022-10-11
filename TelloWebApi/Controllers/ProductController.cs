@@ -41,7 +41,7 @@ namespace TelloWebApi.Controllers
 
                 foreach (var photo in item.Photos)
                 {
-                    productReturnDto.PhotoPath = photo.Path;
+                    productReturnDto.PhotoPath =  photo.Path;
                     productReturnDto.isMainPhoto = photo.IsMain;
                 };
 
@@ -92,7 +92,7 @@ namespace TelloWebApi.Controllers
                   Photos = x.Product.Photos.Select(x => new Photo
                   {
                       Id = x.ProductId,
-                      Path = x.Path,
+                      Path =  x.Path,
                       IsMain = x.IsMain
 
                   }).ToList()
@@ -121,7 +121,7 @@ namespace TelloWebApi.Controllers
                   Photos = x.Photos.Select(x => new Photo
                   {
                       Id = x.ProductId,
-                      Path = x.Path,
+                      Path =  x.Path ,
                       IsMain = x.IsMain
 
                   }).ToList()

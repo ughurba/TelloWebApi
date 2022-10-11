@@ -13,5 +13,6 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductReturnGetOneAdmin
         public int BrandId { get; set; }
         public int CategoryId { get; set; }
 
+
     }
 }

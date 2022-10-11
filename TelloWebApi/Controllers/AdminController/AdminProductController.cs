@@ -97,7 +97,7 @@ namespace TelloWebApi.Controllers.AdminController
 
                 Photo photo = new Photo
                 {
-                    Path = item.SaveImage(_env, "img"),
+                    Path = "http://localhost:33033/img/" + item.SaveImage(_env, "img"),
                     IsMain = false
                 };
                 photos.Add(photo);
@@ -105,7 +105,7 @@ namespace TelloWebApi.Controllers.AdminController
 
             Photo isMainPhoto = new Photo
             {
-                Path = productCreateDto.Photos.SaveImage(_env, "img"),
+                Path = "http://localhost:33033/img/" + productCreateDto.Photos.SaveImage(_env, "img"),
                 IsMain = true,
             };
             photos.Add(isMainPhoto);
@@ -156,6 +156,7 @@ namespace TelloWebApi.Controllers.AdminController
         public IActionResult GetOne(int id)
         {
             Product product = _context.Products.FirstOrDefault(x => x.Id == id);
+            
             ProductReturnGetOneAdmin productReturnGetOneAdmin = new ProductReturnGetOneAdmin()
             {
                 Id = product.Id,
@@ -166,6 +167,7 @@ namespace TelloWebApi.Controllers.AdminController
                 BrandId = product.BrandId,
                 CategoryId = product.CategoryId,
                 Title = product.Title,
+               
             };
 
 
@@ -181,7 +183,6 @@ namespace TelloWebApi.Controllers.AdminController
                 Id = p.Id,
                 Photos = p.Photos.Select(x => new Photo
                 {
-                    //$"http://localhost:33033/img/
                     Path = x.Path,
                     IsMain = x.IsMain,
 

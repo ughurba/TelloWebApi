@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,7 +56,7 @@ namespace TelloWebApi.Controllers
                     NewPrice = x.NewPrice,
                     OldPrice = x.OldPrice,
                     CategoryTitle = x.Category.Title,
-                   
+
                     inStock = x.inStock,
 
                     Colors = x.ProductColors.Select(x => new Color
@@ -63,10 +64,10 @@ namespace TelloWebApi.Controllers
                         Id = x.Colors.Id,
                         Code = x.Colors.Code,
                     }).ToList(),
-                    
+
                     Photos = x.Photos.Select(x => new Photo
                     {
-                        Path = x.Path,
+                        Path =  x.Path,
                         IsMain = x.IsMain
 
                     }).ToList()
@@ -74,9 +75,9 @@ namespace TelloWebApi.Controllers
 
 
             var totalCount = await query.CountAsync();
-            
+
             query = orderBy == 0 ? query.OrderBy(p => p.NewPrice) : query.OrderByDescending(p => p.NewPrice);
-          
+
 
             var result = await query.Skip((page - 1) * size).Take(size).ToListAsync();
             List<int> productIdFavorite = new List<int>();
@@ -85,8 +86,8 @@ namespace TelloWebApi.Controllers
             {
                 productIdFavorite.Add(item.ProductId);
             }
-           
-            return Ok(new { totalCount, result , productIdFavorite });
+
+            return Ok(new { totalCount, result, productIdFavorite });
 
         }
 
