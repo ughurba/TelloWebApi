@@ -32,7 +32,7 @@ namespace TelloWebApi.Controllers
             return Ok(dbCategories);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProduct(int id, [FromQuery] int?[] brandIds, int orderBy, double minPrice, double maxPrice, bool discount = false, int page = 1, int size = 6)
+        public async Task<IActionResult> GetProduct(int id, [FromQuery] int?[] brandIds, int orderBy, double minPrice, double maxPrice, bool discount = false,bool allBrand = false, int page = 1, int size = 6)
         {
             IQueryable<PaginationReturnDto> query = _context.Products
                 .Include(p => p.Photos)
@@ -42,7 +42,7 @@ namespace TelloWebApi.Controllers
                 .ThenInclude(p => p.Colors)
                 .Include(p => p.ProductDetails)
                 .Where(p => !p.isDeleted
-                            && (discount ? true : p.CategoryId == id)
+                            && (discount || allBrand ? true : p.CategoryId == id)
                             && p.NewPrice >= minPrice
                             && p.NewPrice <= maxPrice
                             && (brandIds.Length == 0 ? true : brandIds.Contains(p.BrandId))

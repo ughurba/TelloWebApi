@@ -13,10 +13,10 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductCreateDto
      
         public string Title { get; set; }
         public string Description { get; set; }
-        public int OldPrice { get; set; }
+        public double OldPrice { get; set; }
         public int BrandId { get; set; }
         public int CategoryId { get; set; }
-        public int NewPrice { get; set; }
+        public double NewPrice { get; set; }
         public bool inStock { get; set; }
         public int StockCount { get; set; }
         public bool isDeleted { get; set; }
