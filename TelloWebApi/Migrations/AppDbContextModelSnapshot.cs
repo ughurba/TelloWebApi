@@ -158,7 +158,7 @@ namespace TelloWebApi.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Birthda")
+                    b.Property<string>("Birthday")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -249,7 +249,7 @@ namespace TelloWebApi.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Storage")
+                    b.Property<int?>("Storage")
                         .HasColumnType("int");
 
                     b.Property<double>("Sum")
@@ -428,7 +428,7 @@ namespace TelloWebApi.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Storage")
+                    b.Property<int?>("Storage")
                         .HasColumnType("int");
 
                     b.Property<double>("Total")
@@ -501,9 +501,6 @@ namespace TelloWebApi.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isFavorite")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -624,7 +621,7 @@ namespace TelloWebApi.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Value")
+                    b.Property<int?>("Value")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

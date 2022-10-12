@@ -119,7 +119,7 @@ namespace TelloWebApi.Controllers
         public async Task <IActionResult> UpdateUser(UpdateUserDto updateUserDto)
         {
             AppUser user = await _userManager.FindByNameAsync(updateUserDto.UserName);
-            user.Birthda = updateUserDto.Birthda;
+            user.Birthday = updateUserDto.Birthda;
             user.Name = updateUserDto.FirstName;
             user.Surname = updateUserDto.LastName;
             _context.SaveChanges();
@@ -130,7 +130,7 @@ namespace TelloWebApi.Controllers
             claims.Add(new Claim("Surname", user.Surname));
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
             claims.Add(new Claim("Email", user.Email));
-            claims.Add(new Claim("Birthda", user.Birthda));
+            claims.Add(new Claim("Birthda", user.Birthday));
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var item in roles)
             {

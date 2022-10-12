@@ -9,7 +9,7 @@
         public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }
         public string Code { get; set; }
-        public int Storage { get; set; }
+        public int? Storage { get; set; }
         public double Sum { get; set; }
         public int Count { get; set; }
         public double Price { get; set; }

@@ -136,15 +136,19 @@ namespace TelloWebApi.Controllers.AdminController
                 newProduct.ProductColors.Add(productColor);
                 
             }
-            foreach (var item in productCreateDto.Storage)
+            if(productCreateDto.Storage != null)
             {
-                ProductStorage productStorage = new ProductStorage();
-                Storage storage = new Storage();
-                storage.Value= item;
-                productStorage.Storage = storage;
-                newProduct.ProductStorages.Add(productStorage);
+                foreach (var item in productCreateDto.Storage)
+                {
+                    ProductStorage productStorage = new ProductStorage();
+                    Storage storage = new Storage();
+                    storage.Value = item;
+                    productStorage.Storage = storage;
+                    newProduct.ProductStorages.Add(productStorage);
 
+                }
             }
+          
 
             _context.Add(newProduct);
             _context.SaveChanges();

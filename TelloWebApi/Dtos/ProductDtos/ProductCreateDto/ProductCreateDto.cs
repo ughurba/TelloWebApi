@@ -23,7 +23,7 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductCreateDto
 
         public List<IFormFile> ChildPhotos { get; set; }
         public List<string >Colors{ get; set; }
-        public List<int> Storage { get; set; }
+        public List<int?> Storage { get; set; }
         public IFormFile Photos { get; set; }
  
 

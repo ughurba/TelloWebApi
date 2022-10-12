@@ -7,7 +7,7 @@ namespace TelloWebApi.Models
     {
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string Birthda { get; set; }
+        public string Birthday { get; set; }
    
         public List <Comment> Comments { get; set; }
         public List <Favorit> Favorits { get; set; }

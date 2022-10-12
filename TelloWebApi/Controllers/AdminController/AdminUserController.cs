@@ -47,7 +47,7 @@ namespace TelloWebApi.Controllers.AdminController
                 returnUserDto.Id = item.Id;
                 returnUserDto.Surname = item.Surname;
                 returnUserDto.Name = item.Name;
-                returnUserDto.Birthday = item.Birthda;
+                returnUserDto.Birthday = item.Birthday;
                 returnUserDto.Email = item.Email;
                 returnUserDtos.Add(returnUserDto);
 
