@@ -159,7 +159,13 @@ namespace TelloWebApi.Controllers.AdminController
 
         public IActionResult GetOne(int id)
         {
-            Product product = _context.Products.FirstOrDefault(x => x.Id == id);
+            Product product = _context.Products
+                .Include(x=>x.Photos)
+                .Include(x=>x.ProductColors)
+                .ThenInclude(x=>x.Colors)
+                .Include(x=>x.ProductStorages)
+                .ThenInclude(x=>x.Storage)
+                .FirstOrDefault(x => x.Id == id);
             
             ProductReturnGetOneAdmin productReturnGetOneAdmin = new ProductReturnGetOneAdmin()
             {
@@ -171,6 +177,19 @@ namespace TelloWebApi.Controllers.AdminController
                 BrandId = product.BrandId,
                 CategoryId = product.CategoryId,
                 Title = product.Title,
+                Colors = product.ProductColors.Select(x=>new Color
+                {
+                    Id =x.ColorId,
+                    Code = x.Colors.Code
+                }).ToList(),
+                Storages = product.ProductStorages.Select(x=>new Storage
+                {
+                    Id = x.StorageId,
+                    Value = x.Storage.Value
+                }).ToList(),
+                ChildPhotos = product.Photos.Where(x=>!x.IsMain).ToList(),
+                MainPhoto = product.Photos.FirstOrDefault(x=>x.IsMain)
+                
                
             };
 
@@ -185,6 +204,7 @@ namespace TelloWebApi.Controllers.AdminController
             IQueryable<ProductReturnAdminDto> query = _context.Products.Where(x => !x.isDeleted).Select(p => new ProductReturnAdminDto
             {
                 Id = p.Id,
+
                 Photos = p.Photos.Select(x => new Photo
                 {
                     Path = x.Path,
@@ -196,6 +216,7 @@ namespace TelloWebApi.Controllers.AdminController
                 NewPrice = p.NewPrice,
                 OldPrice = p.OldPrice,
                 StockCount = p.StockCount
+                
             });
 
 

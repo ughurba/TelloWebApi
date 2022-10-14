@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using TelloWebApi.Models;
 
 namespace TelloWebApi.Dtos.ProductDtos.ProductReturnGetOneAdmin
 {
@@ -12,6 +14,10 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductReturnGetOneAdmin
         public string Description { get; set; }
         public int BrandId { get; set; }
         public int CategoryId { get; set; }
+        public List<Photo> ChildPhotos { get; set; }
+        public List<Color> Colors { get; set; }
+        public List<Storage> Storages { get; set; }
+        public Photo MainPhoto { get; set; }
 
 
     }

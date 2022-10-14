@@ -54,7 +54,7 @@ namespace TelloWebApi.Controllers
 
             return Ok(obj);
         }
-        [HttpPost]
+        [HttpPost("addbasket")]
         [Authorize]
 
         public async Task<IActionResult> AddItem(int? productId,int? colorId,int? storageId)
@@ -76,7 +76,7 @@ namespace TelloWebApi.Controllers
             if (isExist == null)
             {
                 basketItem.Code = color.Colors.Code;
-                basketItem.Storage = storage.Storage.Value;
+                basketItem.Storage =( storage == null ? null : storage.Storage.Value);
                 basketItem.ProductId = dbProduct.Id;
                 basketItem.Price = dbProduct.NewPrice;
                 basketItem.AppUserId = userId;
