@@ -362,14 +362,16 @@ namespace TelloWebApi.Controllers.AdminController
                 }
             }
 
-
-            dbProducts.Photos = productImages;
+            if(product.ChildPhotos != null && product.Photos != null)
+            {
+                dbProducts.Photos = productImages;
+            }
+           
             dbProducts.Title = product.Title;
             dbProducts.NewPrice = product.NewPrice;
             dbProducts.OldPrice = product.OldPrice;
             dbProducts.Description = product.Description;
             dbProducts.StockCount = product.StockCount;
-            dbProducts.inStock = product.inStock;
            
             foreach (var item in product.Colors)
             {

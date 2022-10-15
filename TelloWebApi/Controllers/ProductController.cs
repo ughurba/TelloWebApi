@@ -108,7 +108,7 @@ namespace TelloWebApi.Controllers
             var from = DateTime.UtcNow.AddDays(-20);
             IQueryable<ProductReturnDto> query = _context.Products
                  .Include(p => p.Category)
-                .Where(p => p.CreatedDate >= from)
+                .Where(p => p.CreatedDate >= from && !p.isDeleted)
               .Select(x => new ProductReturnDto
               {
                   Id = x.Id,
@@ -132,19 +132,6 @@ namespace TelloWebApi.Controllers
 
 
         }
-
-
-
-
-        [HttpPut]
-        public IActionResult Update(Product product)
-        {
-            return StatusCode(200);
-        }
-
-
-
-       
 
 
     }

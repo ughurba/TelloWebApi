@@ -28,7 +28,7 @@ namespace TelloWebApi.Controllers.AdminController
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromForm] LoginDto loginDto)
         {
             AppUser user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
