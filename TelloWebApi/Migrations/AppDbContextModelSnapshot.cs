@@ -349,6 +349,24 @@ namespace TelloWebApi.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("TelloWebApi.Models.Fag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Fags");
+                });
+
             modelBuilder.Entity("TelloWebApi.Models.Favorit", b =>
                 {
                     b.Property<int>("Id")

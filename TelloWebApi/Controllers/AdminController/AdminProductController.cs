@@ -235,7 +235,7 @@ namespace TelloWebApi.Controllers.AdminController
             Product dbproduct = _context.Products.Include(p => p.Photos).FirstOrDefault(p => p.Id == id);
             foreach (var item in dbproduct.Photos)
             {
-                string path = Path.Combine(_env.WebRootPath, "img", item.Path);
+                string path = Path.Combine(_env.WebRootPath, "img", item.Path.Substring("http://localhost:33033/img/".Length));
 
                 if (dbproduct == null)
                     Helper.Helper.DeleteImage(path);
@@ -257,11 +257,58 @@ namespace TelloWebApi.Controllers.AdminController
         {
             List<Photo> productImages = new List<Photo>();
 
+            List<ProductColor> productColors = new List<ProductColor>();
+            List<ProductStorage> productStorages = new List<ProductStorage>();
 
-            Product dbProducts = _context.Products.Include(p => p.Photos).FirstOrDefault(c => c.Id == product.Id);
+            Product dbProducts = _context.Products
+                .Include(p => p.Photos)
+                .Include(x=>x.ProductColors)
+                .ThenInclude(x=>x.Colors)
+                .Include(x=>x.ProductStorages)
+                .ThenInclude(x=>x.Storage)
+                .FirstOrDefault(c => c.Id == product.Id);
             Product productName = _context.Products.FirstOrDefault(p => p.Title.ToLower() == dbProducts.Title.ToLower());
 
             if (product.Photos != null)
+            {
+               
+
+                if (product.Photos == null)
+                {
+
+                    return BadRequest("Bosqoyma");
+                }
+                if (!product.Photos.IsImage())
+                {
+
+                    return BadRequest("only Photo");
+
+                }
+                if (product.Photos.ValidSize(200))
+                {
+                    return BadRequest("olcu uygun deyil");
+                }
+                foreach (var item in dbProducts.Photos)
+                {
+                    if (item.IsMain)
+                    {
+                        string path = Path.Combine(_env.WebRootPath, "img", item.Path.Substring("http://localhost:33033/img/".Length));
+                        System.IO.File.Delete(path);
+                    }
+
+                }
+
+                Photo photo = new Photo
+                {
+                    Path = "http://localhost:33033/img/" + product.Photos.SaveImage(_env, "img"),
+                    IsMain = true
+                };
+                productImages.Add(photo);
+
+            }
+
+
+            if(product.ChildPhotos != null)
             {
                 foreach (var item in product.ChildPhotos)
                 {
@@ -282,28 +329,31 @@ namespace TelloWebApi.Controllers.AdminController
                         return BadRequest("olcu uygun deyil");
                     }
 
+                }
+                foreach (var item in dbProducts.Photos)
+                {
+                    if (!item.IsMain)
+                    {
+                        string path = Path.Combine(_env.WebRootPath, "img",  item.Path.Substring("http://localhost:33033/img/".Length));
+                        System.IO.File.Delete(path);
+                    }
 
                 }
-
-                if (product.Photos == null)
+                foreach (var item in product.ChildPhotos)
                 {
 
-                    return BadRequest("Bosqoyma");
+                    Photo photo = new Photo
+                    {
+                        Path = "http://localhost:33033/img/" + item.SaveImage(_env, "img"),
+                        IsMain = false
+                    };
+                    productImages.Add(photo);
                 }
-                if (!product.Photos.IsImage())
-                {
-
-                    return BadRequest("only Photo");
-
-                }
-                if (product.Photos.ValidSize(200))
-                {
-                    return BadRequest("olcu uygun deyil");
-                }
-
 
 
             }
+
+
             if (productName != null)
             {
                 if (productName.Title != dbProducts.Title)
@@ -313,14 +363,38 @@ namespace TelloWebApi.Controllers.AdminController
             }
 
 
+            dbProducts.Photos = productImages;
             dbProducts.Title = product.Title;
             dbProducts.NewPrice = product.NewPrice;
             dbProducts.OldPrice = product.OldPrice;
             dbProducts.Description = product.Description;
             dbProducts.StockCount = product.StockCount;
             dbProducts.inStock = product.inStock;
+           
+            foreach (var item in product.Colors)
+            {
+                ProductColor productColor = new ProductColor();
+                Color color = new Color();
+                color.Code = item;
+                productColor.Colors = color;
+                productColors.Add(productColor);
 
+            }
+            if (product.Storage != null)
+            {
+                foreach (var item in product.Storage)
+                {
+                    ProductStorage productStorage = new ProductStorage();
+                    Storage storage = new Storage();
+                    storage.Value = item;
+                    productStorage.Storage = storage;
+                    productStorages.Add(productStorage);
 
+                }
+            }
+
+            dbProducts.ProductStorages = productStorages;
+            dbProducts.ProductColors = productColors;
             await _context.SaveChangesAsync();
             return Ok();
 
