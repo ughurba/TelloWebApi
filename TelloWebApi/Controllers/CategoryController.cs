@@ -31,7 +31,7 @@ namespace TelloWebApi.Controllers
             List<Category> dbCategories = _context.Categories.ToList();
             return Ok(dbCategories);
         }
-        [HttpGet("{id}")]
+        [HttpGet("getProductInShop")]
         public async Task<IActionResult> GetProduct(int id, [FromQuery] int?[] brandIds, int orderBy, double minPrice, double maxPrice, bool discount = false,bool allBrand = false, int page = 1, int size = 6)
         {
             IQueryable<PaginationReturnDto> query = _context.Products

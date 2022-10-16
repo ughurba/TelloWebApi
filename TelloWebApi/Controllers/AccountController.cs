@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TelloWebApi.Data;
+using TelloWebApi.Dtos.AccountDtos.GoogleLoginDto;
 using TelloWebApi.Dtos.AccountDtos.LoginDto;
 using TelloWebApi.Dtos.AccountDtos.RegisterDto;
 
@@ -76,6 +77,11 @@ namespace TelloWebApi.Controllers
 
 
         }
+        //[HttpPost("googleLogin")]
+        //public IActionResult GoogleLogin(GoogleLoginDto googleLoginDto )
+        //{
+
+        //}
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto registerDto)

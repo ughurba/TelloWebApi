@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TelloWebApi.Data;
+using TelloWebApi.Dtos.PaginationDtos;
 using TelloWebApi.Dtos.ProductDtos.ProductReturnDto;
 using TelloWebApi.Models;
 
@@ -41,7 +42,7 @@ namespace TelloWebApi.Controllers
 
                 foreach (var photo in item.Photos)
                 {
-                    productReturnDto.PhotoPath =  photo.Path;
+                    productReturnDto.PhotoPath = photo.Path;
                     productReturnDto.isMainPhoto = photo.IsMain;
                 };
 
@@ -70,6 +71,45 @@ namespace TelloWebApi.Controllers
             return Ok(product);
         }
 
+        [HttpGet("relatedProducts/{cateId}")]
+        public IActionResult GetAllRelatedProduct(int cateId)
+        {
+            IQueryable<PaginationReturnDto> query = _context.Products
+               .Include(p => p.Photos)
+               .Include(p => p.Brand)
+               .Include(p => p.Category)
+               .Include(p => p.ProductColors)
+               .ThenInclude(p => p.Colors)
+               .Include(p => p.ProductDetails)
+               .Where(x => x.CategoryId == cateId && !x.isDeleted )
+               .Select(x => new PaginationReturnDto
+               {
+                   Id = x.Id,
+                   Title = x.Title,
+                   CategoryId = x.CategoryId,
+                   Description = x.Description,
+                   NewPrice = x.NewPrice,
+                   OldPrice = x.OldPrice,
+                   CategoryTitle = x.Category.Title,
+
+                   inStock = x.inStock,
+
+                   Colors = x.ProductColors.Select(x => new Color
+                   {
+                       Id = x.Colors.Id,
+                       Code = x.Colors.Code,
+                   }).ToList(),
+
+                   Photos = x.Photos.Select(x => new Photo
+                   {
+                       Path = x.Path,
+                       IsMain = x.IsMain
+
+                   }).ToList()
+               });
+            var result = query.ToList();
+            return Ok(result);
+        }
         [HttpGet("bestSelling")]
         public IActionResult GetBestSellingProduct()
         {
@@ -92,7 +132,7 @@ namespace TelloWebApi.Controllers
                   Photos = x.Product.Photos.Select(x => new Photo
                   {
                       Id = x.ProductId,
-                      Path =  x.Path,
+                      Path = x.Path,
                       IsMain = x.IsMain
 
                   }).ToList()
@@ -121,7 +161,7 @@ namespace TelloWebApi.Controllers
                   Photos = x.Photos.Select(x => new Photo
                   {
                       Id = x.ProductId,
-                      Path =  x.Path ,
+                      Path = x.Path,
                       IsMain = x.IsMain
 
                   }).ToList()
