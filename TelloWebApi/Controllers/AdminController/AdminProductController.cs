@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TelloWebApi.Data;
+using TelloWebApi.Dtos.BrandDtos;
 using TelloWebApi.Dtos.ProductDtos.ProductCreateDto;
 using TelloWebApi.Dtos.ProductDtos.ProductReturnAdminDto;
 using TelloWebApi.Dtos.ProductDtos.ProductReturnGetOneAdmin;
@@ -449,6 +450,26 @@ namespace TelloWebApi.Controllers.AdminController
             _context.ProductDetails.Remove(productDetails);
             _context.SaveChanges();
             return StatusCode(200);
+        }
+
+        [HttpGet("brandProductsCount")]
+        public IActionResult GetBrandsCount()
+        {
+            List<Brand> dbBrands = _context.Brand.ToList();
+            List<ReturnBrandProductCountDto> brands = new List<ReturnBrandProductCountDto>();
+
+            foreach (var item in dbBrands)
+            {
+               List<Product> products =  _context.Products.Where(x => x.BrandId == item.Id).ToList();
+                ReturnBrandProductCountDto newBrand = new ReturnBrandProductCountDto
+                {
+                    Name = item.Name,
+                    Count = products.Count, 
+                };
+                brands.Add(newBrand);
+            }
+
+            return Ok(brands);
         }
     }
 

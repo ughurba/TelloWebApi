@@ -10,7 +10,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TelloWebApi.Data;
-using TelloWebApi.Dtos.AccountDtos.GoogleLoginDto;
 using TelloWebApi.Dtos.AccountDtos.LoginDto;
 using TelloWebApi.Dtos.AccountDtos.RegisterDto;
 
