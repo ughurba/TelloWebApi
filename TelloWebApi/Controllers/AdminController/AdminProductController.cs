@@ -135,9 +135,9 @@ namespace TelloWebApi.Controllers.AdminController
                 color.Code = item;
                 productColor.Colors = color;
                 newProduct.ProductColors.Add(productColor);
-                
+
             }
-            if(productCreateDto.Storage != null)
+            if (productCreateDto.Storage != null)
             {
                 foreach (var item in productCreateDto.Storage)
                 {
@@ -149,7 +149,7 @@ namespace TelloWebApi.Controllers.AdminController
 
                 }
             }
-          
+
 
             _context.Add(newProduct);
             _context.SaveChanges();
@@ -161,13 +161,13 @@ namespace TelloWebApi.Controllers.AdminController
         public IActionResult GetOne(int id)
         {
             Product product = _context.Products
-                .Include(x=>x.Photos)
-                .Include(x=>x.ProductColors)
-                .ThenInclude(x=>x.Colors)
-                .Include(x=>x.ProductStorages)
-                .ThenInclude(x=>x.Storage)
+                .Include(x => x.Photos)
+                .Include(x => x.ProductColors)
+                .ThenInclude(x => x.Colors)
+                .Include(x => x.ProductStorages)
+                .ThenInclude(x => x.Storage)
                 .FirstOrDefault(x => x.Id == id);
-            
+
             ProductReturnGetOneAdmin productReturnGetOneAdmin = new ProductReturnGetOneAdmin()
             {
                 Id = product.Id,
@@ -178,20 +178,20 @@ namespace TelloWebApi.Controllers.AdminController
                 BrandId = product.BrandId,
                 CategoryId = product.CategoryId,
                 Title = product.Title,
-                Colors = product.ProductColors.Select(x=>new Color
+                Colors = product.ProductColors.Select(x => new Color
                 {
-                    Id =x.ColorId,
+                    Id = x.ColorId,
                     Code = x.Colors.Code
                 }).ToList(),
-                Storages = product.ProductStorages.Select(x=>new Storage
+                Storages = product.ProductStorages.Select(x => new Storage
                 {
                     Id = x.StorageId,
                     Value = x.Storage.Value
                 }).ToList(),
-                ChildPhotos = product.Photos.Where(x=>!x.IsMain).ToList(),
-                MainPhoto = product.Photos.FirstOrDefault(x=>x.IsMain)
-                
-               
+                ChildPhotos = product.Photos.Where(x => !x.IsMain).ToList(),
+                MainPhoto = product.Photos.FirstOrDefault(x => x.IsMain)
+
+
             };
 
 
@@ -205,19 +205,21 @@ namespace TelloWebApi.Controllers.AdminController
             IQueryable<ProductReturnAdminDto> query = _context.Products.Where(x => !x.isDeleted).Select(p => new ProductReturnAdminDto
             {
                 Id = p.Id,
-
                 Photos = p.Photos.Select(x => new Photo
                 {
                     Path = x.Path,
                     IsMain = x.IsMain,
 
                 }).ToList(),
+                brandName= p.Brand.Name,
                 Description = p.Description,
                 Title = p.Title,
                 NewPrice = p.NewPrice,
                 OldPrice = p.OldPrice,
-                StockCount = p.StockCount
+                StockCount = p.StockCount,
+                CategoryTitle = p.Category.Title
                 
+
             });
 
 
@@ -263,16 +265,16 @@ namespace TelloWebApi.Controllers.AdminController
 
             Product dbProducts = _context.Products
                 .Include(p => p.Photos)
-                .Include(x=>x.ProductColors)
-                .ThenInclude(x=>x.Colors)
-                .Include(x=>x.ProductStorages)
-                .ThenInclude(x=>x.Storage)
+                .Include(x => x.ProductColors)
+                .ThenInclude(x => x.Colors)
+                .Include(x => x.ProductStorages)
+                .ThenInclude(x => x.Storage)
                 .FirstOrDefault(c => c.Id == product.Id);
             Product productName = _context.Products.FirstOrDefault(p => p.Title.ToLower() == dbProducts.Title.ToLower());
 
             if (product.Photos != null)
             {
-               
+
 
                 if (product.Photos == null)
                 {
@@ -309,7 +311,7 @@ namespace TelloWebApi.Controllers.AdminController
             }
 
 
-            if(product.ChildPhotos != null)
+            if (product.ChildPhotos != null)
             {
                 foreach (var item in product.ChildPhotos)
                 {
@@ -335,7 +337,7 @@ namespace TelloWebApi.Controllers.AdminController
                 {
                     if (!item.IsMain)
                     {
-                        string path = Path.Combine(_env.WebRootPath, "img",  item.Path.Substring("http://localhost:33033/img/".Length));
+                        string path = Path.Combine(_env.WebRootPath, "img", item.Path.Substring("http://localhost:33033/img/".Length));
                         System.IO.File.Delete(path);
                     }
 
@@ -363,17 +365,17 @@ namespace TelloWebApi.Controllers.AdminController
                 }
             }
 
-            if(product.ChildPhotos != null && product.Photos != null)
+            if (product.ChildPhotos != null && product.Photos != null)
             {
                 dbProducts.Photos = productImages;
             }
-           
+
             dbProducts.Title = product.Title;
             dbProducts.NewPrice = product.NewPrice;
             dbProducts.OldPrice = product.OldPrice;
             dbProducts.Description = product.Description;
             dbProducts.StockCount = product.StockCount;
-           
+
             foreach (var item in product.Colors)
             {
                 ProductColor productColor = new ProductColor();
@@ -460,16 +462,34 @@ namespace TelloWebApi.Controllers.AdminController
 
             foreach (var item in dbBrands)
             {
-               List<Product> products =  _context.Products.Where(x => x.BrandId == item.Id).ToList();
+                List<Product> products = _context.Products.Where(x => x.BrandId == item.Id).ToList();
                 ReturnBrandProductCountDto newBrand = new ReturnBrandProductCountDto
                 {
                     Name = item.Name,
-                    Count = products.Count, 
+                    Count = products.Count,
                 };
                 brands.Add(newBrand);
             }
 
             return Ok(brands);
+        }
+        [HttpGet("DateCountAddProduct")]
+        [Authorize]
+        public IActionResult DateAddProduct()
+        {
+            List<Product> products = _context.Products.ToList();
+            List<Product> dbProducts = new List<Product>();
+            int[] array = new int[12];
+
+
+            foreach (var item in products)
+            {
+                var month = DateTime.Parse(item.CreatedDate.ToString()).Month;
+                dbProducts = _context.Products.Where(x=>x.CreatedDate.Value.Month == month && !x.isDeleted).ToList();
+                array[month - 1] = dbProducts.Count();
+           
+            }
+            return Ok(array);
         }
     }
 

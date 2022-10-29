@@ -13,7 +13,9 @@ namespace TelloWebApi.Dtos.ProductDtos.ProductReturnAdminDto
         public Nullable<double> OldPrice { get; set; }
         public int StockCount { get; set; }
         public string Description { get; set; }
-       
+        public string CategoryTitle { get; set; }
+        public string brandName { get; set; }
+
 
 
     }

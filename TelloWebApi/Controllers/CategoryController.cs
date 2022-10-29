@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,12 +31,15 @@ namespace TelloWebApi.Controllers
             return Ok(dbCategories);
         }
         [HttpGet("getProductInShop")]
-        public async Task<IActionResult> GetProduct(int id, [FromQuery] int?[] brandIds, int orderBy, double minPrice, double maxPrice, bool discount = false,bool allBrand = false, int page = 1, int size = 6)
+        public async Task<IActionResult> GetProduct(int id, [FromQuery] int?[] brandIds, int orderBy, double minPrice, double maxPrice,string userId, bool discount = false, bool allBrand = false, int page = 1, int size = 6)
         {
+
+     
             IQueryable<PaginationReturnDto> query = _context.Products
                 .Include(p => p.Photos)
                 .Include(p => p.Brand)
                 .Include(p => p.Category)
+                .Include(x=>x.Favorits)
                 .Include(p => p.ProductColors)
                 .ThenInclude(p => p.Colors)
                 .Include(p => p.ProductDetails)
@@ -56,7 +58,7 @@ namespace TelloWebApi.Controllers
                     NewPrice = x.NewPrice,
                     OldPrice = x.OldPrice,
                     CategoryTitle = x.Category.Title,
-
+                    Favorits = x.Favorits,
                     inStock = x.inStock,
 
                     Colors = x.ProductColors.Select(x => new Color
@@ -67,7 +69,7 @@ namespace TelloWebApi.Controllers
 
                     Photos = x.Photos.Select(x => new Photo
                     {
-                        Path =  x.Path,
+                        Path = x.Path,
                         IsMain = x.IsMain
 
                     }).ToList()
@@ -81,11 +83,15 @@ namespace TelloWebApi.Controllers
 
             var result = await query.Skip((page - 1) * size).Take(size).ToListAsync();
             List<int> productIdFavorite = new List<int>();
-            List<Favorit> favorits = _context.Favorits.ToList();
-            foreach (var item in favorits)
+            if (userId != null)
             {
-                productIdFavorite.Add(item.ProductId);
+                List<Favorit> favorits = _context.Favorits.Where(x=>x.AppUserId == userId).ToList();
+                foreach (var item in favorits)
+                {
+                    productIdFavorite.Add(item.ProductId);
+                }
             }
+
 
             return Ok(new { totalCount, result, productIdFavorite });
 

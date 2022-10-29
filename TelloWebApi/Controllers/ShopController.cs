@@ -52,12 +52,11 @@ namespace TelloWebApi.Controllers
         {
             string UserToken = HttpContext.Request.Headers["Authorization"].ToString();
             var userId = Helper.Helper.DecodeToken(UserToken);
-            if (createFavoriteDto.isFavorite)
+            
+                var favorites = _context.Favorits.FirstOrDefault(x=>createFavoriteDto.favId == x.Id && userId == x.AppUserId);
+            if (favorites == null)
             {
-                var favorite = _context.Favorits.FirstOrDefault(x => x.ProductId == createFavoriteDto.ProductId);
-                if(favorite == null)
-                {
-                    Favorit favorit = new Favorit()
+                Favorit favorit = new Favorit()
                     {
                         AppUserId = userId,
                         ProductId = createFavoriteDto.ProductId
@@ -66,10 +65,9 @@ namespace TelloWebApi.Controllers
                     _context.Add(favorit);
                     _context.SaveChanges();
                     return StatusCode(201);
-                }
-         
-             
             }
+
+
             Favorit dbFavorit = _context.Favorits.FirstOrDefault(f => f.ProductId == createFavoriteDto.ProductId && f.AppUserId == userId);
             _context.Remove(dbFavorit);
             _context.SaveChanges();
